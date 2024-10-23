@@ -5,6 +5,9 @@ Deno.serve((req) => {
   const url = req.url
   const params = new URLSearchParams(url.split('?')[1])
   const country = params.get('country')
+  const region = params.get('region')
+  const date = params.get('date')
+  const duration = params.get('duration')
 
   const body = new ReadableStream({
     start(controller) {
@@ -12,9 +15,9 @@ Deno.serve((req) => {
         controller.enqueue(new TextEncoder().encode('data: Hello everyone I am alive\r\n'))
 
         const userMessages: OpenAI.Chat.ChatCompletionUserMessageParam[] = [
-          { role: 'user', content: `I am planning a trip to ${country}. What should I do there? For this response you may give a large amount of information, beyond a single sentence.` },
-          { role: 'user', content: `I am planning a trip to ${country}. Where should I go to eat?` },
-          { role: 'user', content: `I am planning a trip to ${country} in April, what is the weather like?` }
+          { role: 'user', content: `I am planning a trip to ${region}, ${country}. What should I do there? For this response you may give a large amount of information, beyond a single sentence.` },
+          { role: 'user', content: `I am planning a trip to ${region}, ${country}. Where should I go to eat?` },
+          { role: 'user', content: `I am planning a trip to ${country} on ${date} for ${duration} days, what is the weather like?` }
         ]
 
         const getResponse = async (
