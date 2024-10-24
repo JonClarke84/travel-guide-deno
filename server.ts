@@ -1,62 +1,18 @@
-import OpenAI from 'npm:openai'
-const client = new OpenAI()
+import { handleTripIntro } from './handlers/handleTripIntro.ts'
+import { handleFood } from './handlers/handleFood.ts'
+import { handleWeather } from './handlers/handleWeather.ts'
 
 Deno.serve((req) => {
-  const url = req.url
-  const params = new URLSearchParams(url.split('?')[1])
-  const country = params.get('country')
-  const region = params.get('region')
-  const date = params.get('date')
-  const duration = params.get('duration')
+  const { pathname, searchParams } = new URL(req.url)
 
-  const body = new ReadableStream({
-    start(controller) {
-      (async () => {
-        controller.enqueue(new TextEncoder().encode('data: Hello everyone I am alive\r\n'))
-
-        const userMessages: OpenAI.Chat.ChatCompletionUserMessageParam[] = [
-          { role: 'user', content: `I am planning a trip to ${region}, ${country}. What should I do there? For this response you may give a large amount of information, beyond a single sentence.` },
-          { role: 'user', content: `I am planning a trip to ${region}, ${country}. Where should I go to eat?` },
-          { role: 'user', content: `I am planning a trip to ${country} on ${date} for ${duration} days, what is the weather like?` }
-        ]
-
-        const getResponse = async (
-          message: OpenAI.Chat.ChatCompletionUserMessageParam
-        ) => {
-          const stream = await client.chat.completions.create({
-            model: 'gpt-4o',
-            messages: [
-              { role: 'system', content: 'You are a travel expert, you only respond in single sentences unless prompted otherwise.' },
-              message
-            ],
-            stream: true
-          })
-          let response = ''
-          for await (const chunk of stream) {
-            response += chunk.choices[0].delta.content || ''
-          }
-          return response
-        }
-
-        const queueResponse = async (message: OpenAI.Chat.ChatCompletionUserMessageParam) => {
-          const response = await getResponse(message)
-          controller.enqueue(new TextEncoder().encode(`data: ${response}\r\n`))
-        }
-
-        const fetchPromises = userMessages.map((message) => queueResponse(message))
-
-        await Promise.all(fetchPromises)
-
-        // controller.close()
-        })
-      ()
-    }
-  })
-  return new Response(body, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive'
-    }
-  })
+  switch (pathname) {
+    case '/trip-intro':
+      return handleTripIntro(searchParams)
+    case '/food':
+      return handleFood()
+    case '/weather':
+      return handleWeather()
+    default:
+      return new Response('Not found', { status: 404 })
+  }
 })
