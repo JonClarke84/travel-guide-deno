@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
       return handleHtml(page)
     }
     case '/trip-intro':
-      return handleTripIntro(searchParams)
+      return handleTripIntro(req.headers)
     case '/food':
       return handleFood(searchParams, googlePlacesApiKey)
     case '/things-to-do':

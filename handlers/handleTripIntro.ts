@@ -1,13 +1,26 @@
 import { openaiConnector } from '../connectors/openaiRecommender.ts'
-import { createSSEResponse } from '../connectors/createSSEResponse.ts'
 
 export const handleTripIntro = async (
-  searchparams: URLSearchParams
+  headers: Headers
 ) => {
-  const country = searchparams.get('country')
-  const region = searchparams.get('region')
+  const currentUrl = headers.get('hx-current-url')
 
-  console.log('trip intro')
+  if (!currentUrl) {
+    return new Response(
+      'No current URL found',
+      {
+        status: 400,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      }
+    )
+  }
+
+  const searchParams = new URL(currentUrl).searchParams
+  const region = searchParams.get('region')
+  const country = searchParams.get('country')
+
   const response = await openaiConnector(
     {
       role: 'user',
@@ -15,5 +28,13 @@ export const handleTripIntro = async (
     }
   )
 
-  return createSSEResponse(response)
+  return new Response(
+    response.choices[0].message.content,
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }
+  )
 }

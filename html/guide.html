@@ -3,16 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <title>Travel Guide</title>
-    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+    <script
+      src="https://unpkg.com/htmx.org@2.0.3"
+      integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
+      crossorigin="anonymous"
+    ></script>
     <style>
       body {
         font-family: Arial, sans-serif;
+        background-color: darkgrey;
+      }
+      ul {
+        --auto-grid-min-size: 16rem;
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(var(--auto-grid-min-size), 1fr)
+        );
+        grid-gap: 1rem;
+        list-style-type: none;
+      }
+      li {
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        background-color: white;
+        min-height: 10rem;
+
+        .place-name {
+          color: #333;
+        }
       }
     </style>
   </head>
   <body>
     <h1>Guide</h1>
-      <p hx-get='../things-to-do' hx-params='*' hx-trigger='load' hx-swap='outerHTML'>Loading...</p>
+    <div hx-get="/trip-intro" hx-trigger="load once" hx-swap="outerHTML">
+      Loading...
+    </div>
+    <p hx-get="../things-to-do" hx-trigger="load" hx-swap="outerHTML">
+      Loading...
+    </p>
   </body>
 </html>
-

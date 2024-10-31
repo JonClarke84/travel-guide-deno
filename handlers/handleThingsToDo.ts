@@ -38,27 +38,36 @@ export const handleThingsToDo = async (
 
   const data = await googlePlacesConnector(apiKey, fieldMask, textQuery)
 
-  console.log('data:', data)
+  type Place = {
+    displayName: {
+      text: string
+    }
+    rating: number
+    editorialSummary: {
+      text: string
+    }
+    websiteUri: string
+  }
 
   const html =
     `<ul>
       ${data.places
-        .map((place: any) => {
-          const name = place.displayName.text || 'No Name Available';
-          const rating = place.rating ? `Rating: ${place.rating}` : 'No Rating Available';
-          const summary = place.editorialSummary?.text || 'No Summary Available';
+        .map((place: Place) => {
+          const name = place.displayName.text || 'No Name Available'
+          const rating = place.rating ? `Rating: ${place.rating}` : 'No Rating Available'
+          const summary = place.editorialSummary?.text || 'No Summary Available'
           const website = place.websiteUri
             ? `<a href="${place.websiteUri}" target="_blank">Website</a>`
-            : 'No Website Available';
+            : 'No Website Available'
 
           return `
             <li>
-              <div class="place-name">${name}</div>
+              <h4 class="place-name">${name}</h4>
               <div class="rating">${rating}</div>
               <div class="summary">${summary}</div>
               <div class="website">${website}</div>
             </li>
-          `;
+          `
         })
         .join('')}
       </ul>
