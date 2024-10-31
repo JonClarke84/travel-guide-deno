@@ -1,9 +1,24 @@
 import { googlePlacesConnector } from '../connectors/googlePlaces.ts'
 
 export const handleThingsToDo = async (
-  searchParams: URLSearchParams,
-  apiKey: string | undefined
+  apiKey: string | undefined,
+  headers: Headers
 ) => {
+  const currentUrl = headers.get('hx-current-url')
+
+  if (!currentUrl) {
+    return new Response(
+      'No current URL found',
+      {
+        status: 400,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      }
+    )
+  }
+
+  const searchParams = new URL(currentUrl).searchParams
   const region = searchParams.get('region')
   const country = searchParams.get('country')
 
@@ -23,12 +38,38 @@ export const handleThingsToDo = async (
 
   const data = await googlePlacesConnector(apiKey, fieldMask, textQuery)
 
+  console.log('data:', data)
+
+  const html =
+    `<ul>
+      ${data.places
+        .map((place: any) => {
+          const name = place.displayName.text || 'No Name Available';
+          const rating = place.rating ? `Rating: ${place.rating}` : 'No Rating Available';
+          const summary = place.editorialSummary?.text || 'No Summary Available';
+          const website = place.websiteUri
+            ? `<a href="${place.websiteUri}" target="_blank">Website</a>`
+            : 'No Website Available';
+
+          return `
+            <li>
+              <div class="place-name">${name}</div>
+              <div class="rating">${rating}</div>
+              <div class="summary">${summary}</div>
+              <div class="website">${website}</div>
+            </li>
+          `;
+        })
+        .join('')}
+      </ul>
+    `
+
   return new Response(
-    JSON.stringify(data),
+    html,
     {
       status: 200,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/html'
       }
     }
   )

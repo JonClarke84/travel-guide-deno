@@ -7,6 +7,7 @@ export const handleTripIntro = async (
   const country = searchparams.get('country')
   const region = searchparams.get('region')
 
+  console.log('trip intro')
   const response = await openaiConnector(
     {
       role: 'user',

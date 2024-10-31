@@ -1,7 +1,6 @@
-  export const handleHomepage = async () => {
-    const index = await Deno.readFile('../html/index.html')
+  export const handleHtml = (page: Uint8Array) => {
     return new Response(
-      index,
+      page,
       {
         status: 200,
         headers: {
