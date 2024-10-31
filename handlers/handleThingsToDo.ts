@@ -1,6 +1,6 @@
 import { googlePlacesConnector } from '../connectors/googlePlaces.ts'
 
-export const handleFood = async (
+export const handleThingsToDo = async (
   searchParams: URLSearchParams,
   apiKey: string | undefined
 ) => {
@@ -19,7 +19,7 @@ export const handleFood = async (
     'places.websiteUri'
   ]
 
-  const textQuery = `The best rated food in ${region}, ${country}`
+  const textQuery = `The best rated things to do in ${region}, ${country}`
 
   const data = await googlePlacesConnector(apiKey, fieldMask, textQuery)
 

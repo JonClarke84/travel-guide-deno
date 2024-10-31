@@ -1,6 +1,7 @@
 import { handleTripIntro } from './handlers/handleTripIntro.ts'
 import { handleFood } from './handlers/handleFood.ts'
 import { handleWeather } from './handlers/handleWeather.ts'
+import { handleThingsToDo } from './handlers/handleThingsToDo.ts'
 
 Deno.serve((req) => {
   const googlePlacesApiKey = Deno.env.get('GOOGLE_PLACES_KEY')
@@ -11,6 +12,8 @@ Deno.serve((req) => {
       return handleTripIntro(searchParams)
     case '/food':
       return handleFood(searchParams, googlePlacesApiKey)
+    case '/things-to-do':
+      return handleThingsToDo(searchParams, googlePlacesApiKey)
     case '/weather':
       return handleWeather()
     default:
