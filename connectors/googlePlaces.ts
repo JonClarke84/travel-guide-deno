@@ -27,7 +27,14 @@ export const googlePlacesConnector = async (
     })
   })
 
-  const data = await response.json()
+  const responseMock = async () => {
+    const json = await Deno.readTextFile('./tests/fixtures/places/thingsToDo.json')
+    return JSON.parse(json)
+  }
+
+  const env = Deno.env.get('DENO_ENV') || 'development'
+
+  const data = env === 'development' ? await responseMock() : await response.json()
 
   return data
 }
